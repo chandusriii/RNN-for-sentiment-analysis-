@@ -1,72 +1,95 @@
-# RNN for Sentiment Analysis
+# IMDb Movie Review Sentiment Analysis with PyTorch RNN
 
-An educational deep learning project that explores **Natural Language Processing (NLP)** and **Recurrent Neural Networks (RNNs)** for classifying IMDb movie reviews as **positive** or **negative**.
+A hands-on Natural Language Processing (NLP) project that classifies IMDb movie reviews as **positive** or **negative** using a PyTorch Recurrent Neural Network (RNN).
 
-The project starts with a TF-IDF-based baseline implemented with PyTorch. The next development stage is to build a genuinely sequential RNN using token IDs, padding, and an embedding layer, then compare it with an LSTM.
+This repository preserves the original implementation as a baseline and documents a planned extension to a true word-sequence RNN. The two approaches will be kept separate so the original work and its results remain reproducible.
 
-## Project Overview
+## Project objective
 
-Sentiment analysis is a text-classification task that identifies the opinion expressed in a piece of text. In this project, movie reviews from the IMDb dataset are processed and used to train a binary classifier.
+Given a movie review, predict its sentiment:
 
-**Objective:** Given a movie review, predict whether its sentiment is positive or negative.
+- `0` — Negative
+- `1` — Positive
 
 ## Dataset
 
 - **Dataset:** IMDb Movie Reviews
-- **Size:** 50,000 reviews (before duplicate removal)
-- **Classes:** Positive and negative
-- **Input:** A written movie review
-- **Target:** Sentiment label
+- **Original size:** 50,000 reviews
+- **Columns:** `review`, `sentiment`
+- **Rows after duplicate removal in the original notebook:** 49,582
 
-The dataset is not included in this repository. Download the IMDb Dataset and place the CSV file in the project directory with the filename:
+The repository includes the dataset file `IMDB Dataset.csv`. It is approximately 63 MB, so GitHub may display a warning that it exceeds the recommended 50 MB file size.
 
-`IMDB Dataset.csv`
+## Original implementation: TF-IDF + PyTorch RNN
 
-The notebook expects the CSV to contain two columns: `review` and `sentiment`.
+The notebook `RNN_for_sentimentanalysis.ipynb` contains the original experiment.
 
-## Current Workflow
+### Workflow
 
-The current notebook, `RNN_for_sentimentanalysis.ipynb`, covers the following steps:
+1. Load the CSV dataset with Pandas and inspect its shape, sample records, and missing values.
+2. Remove duplicate records.
+3. Clean review text by lowercasing and removing URLs, punctuation, and HTML markup.
+4. Remove English stopwords with NLTK.
+5. Apply Porter stemming.
+6. Encode sentiment labels with Scikit-learn's `LabelEncoder`.
+7. Convert reviews into numerical features with `TfidfVectorizer(max_features=5000)`.
+8. Split the data into training and testing sets using an 80/20 split and `random_state=42`.
+9. Convert the feature arrays and labels into PyTorch tensors and create `TensorDataset` and `DataLoader` objects.
+10. Define a PyTorch `nn.RNN` model with a hidden size of 128 and a linear output layer.
+11. Train using binary cross-entropy loss and the Adam optimizer for 10 epochs.
+12. Evaluate predictions on the held-out test set.
 
-1. Load the IMDb dataset using Pandas.
-2. Inspect missing values and remove duplicate reviews.
-3. Convert review text to lowercase.
-4. Remove URLs, punctuation, and HTML tags.
-5. Tokenize text and remove English stopwords using NLTK.
-6. Apply Porter stemming.
-7. Encode sentiment labels.
-8. Convert review text into TF-IDF features (up to 5,000 features).
-9. Split the data into training and testing sets.
-10. Create PyTorch datasets and data loaders.
-11. Define and train a PyTorch RNN model.
-12. Evaluate the model using test accuracy.
+### Original result
 
-## Important Implementation Note
+**Test accuracy recorded in the original notebook: 85.16%.**
 
-The current notebook is a **TF-IDF-based baseline**. It converts each review into a fixed-size feature vector and adds a singleton sequence dimension before passing it to the RNN. Therefore, the model does not process the review as a word-by-word sequence, and it does not learn the temporal relationships between successive words in the way a sequence-based RNN does.
+This is the result from the original experiment; it should not be interpreted as the result of the planned sequence-based model.
 
-This baseline is being retained as a learning milestone. A proper sequence-based implementation is planned next.
+### Important architecture detail
 
-## Planned Improvements
+The original notebook adds a sequence dimension to each TF-IDF vector with `unsqueeze(1)`. The resulting input shape is:
 
-- Build a vocabulary and convert each review into token IDs.
-- Pad or truncate reviews to a consistent sequence length.
-- Add an embedding layer to learn dense word representations.
-- Implement a sequence-based vanilla RNN for sentiment classification.
-- Implement an LSTM model to learn longer-term dependencies.
-- Compare model performance using accuracy, precision, recall, F1-score, and confusion matrices.
-- Add example predictions for new, unseen movie reviews.
+```text
+(batch_size, 1, 5000)
+```
 
-## Technologies Used
+So the RNN receives a sequence of **one timestep**, where the 5,000 TF-IDF values form the input at that timestep. It is a valid RNN-based experiment, but it does **not** read the review word by word or model word-order dependencies across multiple timesteps.
 
-- **Language:** Python
-- **Deep Learning:** PyTorch
-- **Data Processing:** Pandas, NumPy
-- **NLP:** NLTK
-- **Feature Extraction:** Scikit-learn TF-IDF
-- **Development:** Jupyter Notebook
+### Preprocessing note
 
-## Getting Started
+During review of the original preprocessing code, stopword removal using repeated string replacement was identified as a potential text-corruption issue. For example, removing a stopword substring can alter a different word that contains the same character sequence. This behavior should be corrected in a separately documented improvement rather than silently changing the original experiment.
+
+## Planned extension: true sequence-based RNN
+
+The next notebook will implement a separate word-sequence pipeline:
+
+1. Clean and tokenize each review.
+2. Build a vocabulary from the training split only.
+3. Convert tokens into integer IDs.
+4. Pad or truncate reviews to a fixed sequence length.
+5. Use an embedding layer to map token IDs to dense vectors.
+6. Pass the sequence through a vanilla PyTorch RNN.
+7. Train and evaluate the classifier.
+8. Compare the sequence model with the original TF-IDF baseline using consistent metrics.
+
+An LSTM can be added as a later experiment after the vanilla sequence RNN is understood and evaluated.
+
+## Repository layout
+
+```text
+RNN-for-sentiment-analysis-/
+├── RNN_for_sentimentanalysis.ipynb   # Original TF-IDF + RNN experiment
+├── IMDB Dataset.csv                  # IMDb review dataset
+├── README.md
+├── requirements.txt
+├── .gitignore
+└── docs/
+    └── implementation_notes.md        # Design notes and next steps
+```
+
+As the extension is implemented, a separate notebook and reproducible evaluation outputs will be added. No untrained or unverified model results are reported here.
+
+## Setup
 
 ### 1. Clone the repository
 
@@ -75,13 +98,13 @@ git clone https://github.com/chandusriii/RNN-for-sentiment-analysis-.git
 cd RNN-for-sentiment-analysis-
 ```
 
-### 2. Create and activate a virtual environment (optional)
+### 2. Create a virtual environment (recommended)
 
 **Windows:**
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.venv\\Scripts\\activate
 ```
 
 **macOS / Linux:**
@@ -94,60 +117,53 @@ source .venv/bin/activate
 ### 3. Install dependencies
 
 ```bash
-pip install pandas numpy nltk scikit-learn torch jupyter
+pip install -r requirements.txt
 ```
 
-### 4. Download the IMDb dataset
-
-Place `IMDB Dataset.csv` in the repository root.
-
-### 5. Download required NLTK resources
-
-Run this once in Python:
-
-```python
-import nltk
-
-nltk.download("punkt")
-nltk.download("punkt_tab")
-nltk.download("stopwords")
-```
-
-### 6. Launch the notebook
+### 4. Launch Jupyter
 
 ```bash
 jupyter notebook
 ```
 
-Open `RNN_for_sentimentanalysis.ipynb` and run the cells in order.
+Open `RNN_for_sentimentanalysis.ipynb` and run its cells in order.
 
-## Repository Structure
+The original notebook uses NLTK stopwords. If the resource is not available locally, run:
 
-```text
-RNN-for-sentiment-analysis-/
-│
-├── RNN_for_sentimentanalysis.ipynb
-├── IMDB Dataset.csv          # Download separately; not committed
-├── README.md
-├── LICENSE
-└── .gitignore
+```python
+import nltk
+nltk.download("stopwords")
 ```
 
-## Learning Goals
+## Technologies
 
-Through this project, I am strengthening my understanding of:
+- Python
+- PyTorch
+- Pandas and NumPy
+- NLTK
+- Scikit-learn
+- Jupyter Notebook
 
-- NLP text preprocessing and tokenization
-- Text representation and TF-IDF
-- Recurrent neural network architecture
-- Hidden states and sequential learning
-- Model training, loss calculation, and backpropagation
-- Sentiment classification and model evaluation
-- Differences between vanilla RNNs and LSTMs
+## Learning outcomes
 
-## Project Status
+- Text cleaning and preprocessing
+- Stopword removal and stemming
+- TF-IDF feature extraction
+- Label encoding and train/test splitting
+- PyTorch datasets and data loaders
+- RNN architecture, hidden states, and training
+- Binary sentiment classification and evaluation
+- Understanding the difference between fixed-vector input and word-sequence input
 
-**In progress.** The initial TF-IDF-based PyTorch baseline is documented. Sequence-based RNN and LSTM implementations, detailed evaluation, and model comparisons are planned development milestones.
+## Project status
+
+- [x] Original TF-IDF + PyTorch RNN experiment
+- [x] Document original test accuracy (85.16%)
+- [x] Explain the one-timestep architecture
+- [ ] Implement a separate sequence-based vanilla RNN
+- [ ] Evaluate with accuracy, precision, recall, F1-score, and confusion matrix
+- [ ] Compare baseline and sequence-based models
+- [ ] Consider an LSTM extension
 
 ## Author
 
@@ -155,7 +171,3 @@ Through this project, I am strengthening my understanding of:
 
 - GitHub: [@chandusriii](https://github.com/chandusriii)
 - Portfolio: [chandusriii.github.io](https://chandusriii.github.io/chandusriii/)
-
----
-
-If you find this project useful for learning NLP and deep learning, feel free to explore the repository and follow its progress.
