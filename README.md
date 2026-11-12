@@ -4,6 +4,22 @@ A hands-on Natural Language Processing (NLP) project that classifies IMDb movie 
 
 This repository preserves the original implementation as a baseline and documents a planned extension to a true word-sequence RNN. The two approaches will be kept separate so the original work and its results remain reproducible.
 
+## Project visuals
+
+### End-to-end project workflow
+
+![IMDb sentiment analysis project workflow](assets/project-overview.svg)
+
+### RNN architecture (conceptual)
+
+![Vanilla RNN sequence architecture](assets/rnn-architecture.svg)
+
+### LSTM architecture (conceptual learning reference)
+
+![LSTM cell information flow](assets/lstm-cell.svg)
+
+> The diagrams distinguish the original notebook's TF-IDF + one-timestep RNN baseline from the conceptual word-sequence RNN and LSTM architectures covered in `RNN_Learning/`.
+
 ## Project objective
 
 Given a movie review, predict its sentiment:
