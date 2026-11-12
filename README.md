@@ -91,6 +91,18 @@ RNN-for-sentiment-analysis-/
 
 As the extension is implemented, a separate notebook and reproducible evaluation outputs will be added. No untrained or unverified model results are reported here.
 
+## RNN learning notes
+
+A separate [`RNN_Learning/`](RNN_Learning/README.md) folder contains conceptual study chapters covering:
+
+1. Introduction to RNNs and sequential data
+2. RNN architecture, hidden states, and weight sharing
+3. Forward propagation, BPTT, vanishing gradients, and exploding gradients
+4. LSTM architecture, cell state, and gates
+5. Applying RNN concepts to sentiment analysis
+
+These notes are learning material and are kept separate from the original implementation. They explain sequence-based RNN concepts without changing or overstating what the original notebook does.
+
 ## Setup
 
 ### 1. Clone the repository
