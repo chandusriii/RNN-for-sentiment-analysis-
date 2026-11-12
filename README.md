@@ -18,7 +18,7 @@ Given a movie review, predict its sentiment:
 - **Columns:** `review`, `sentiment`
 - **Rows after duplicate removal in the original notebook:** 49,582
 
-The repository includes the dataset file `IMDB Dataset.csv`. It is approximately 63 MB, so GitHub may display a warning that it exceeds the recommended 50 MB file size.
+The repository includes the dataset file `IMDB Dataset.csv` in the root directory. It is approximately 63 MB. It is intentionally kept at the root because the original notebook loads it by filename from the project working directory. See [dataset notes](docs/dataset.md) before moving or renaming it.
 
 ## Original implementation: TF-IDF + PyTorch RNN
 
@@ -80,13 +80,27 @@ An LSTM can be added as a later experiment after the vanilla sequence RNN is und
 
 ```text
 RNN-for-sentiment-analysis-/
-├── RNN_for_sentimentanalysis.ipynb   # Original TF-IDF + RNN experiment
-├── IMDB Dataset.csv                  # IMDb review dataset
-├── README.md
-├── requirements.txt
+│
+├── RNN_for_sentimentanalysis.ipynb   # Original project notebook (keep at root)
+├── IMDB Dataset.csv                  # Original 50,000-review dataset
+├── README.md                         # Project overview and navigation
+├── requirements.txt                  # Python dependencies
+├── LICENSE
 ├── .gitignore
-└── docs/
-    └── implementation_notes.md        # Design notes and next steps
+│
+├── RNN_Learning/                     # Conceptual study material
+│   ├── README.md                     # Chapter index
+│   ├── 01_Introduction_to_RNNs.md
+│   ├── 02_RNN_Architecture.md
+│   ├── 03_Training_RNNs.md
+│   ├── 04_LSTM_Architecture.md
+│   └── 05_RNNs_for_Sentiment_Analysis.md
+│
+├── docs/                             # Project documentation
+│   └── implementation_notes.md
+│
+└── results/                          # Verified baseline documentation
+    └── baseline_results.md
 ```
 
 As the extension is implemented, a separate notebook and reproducible evaluation outputs will be added. No untrained or unverified model results are reported here.
@@ -140,7 +154,7 @@ pip install -r requirements.txt
 jupyter notebook
 ```
 
-Open `RNN_for_sentimentanalysis.ipynb` and run its cells in order.
+Open `RNN_for_sentimentanalysis.ipynb` and run its cells in order. Keep `IMDB Dataset.csv` in the same project directory so the original data-loading cell can find it.
 
 The original notebook uses NLTK stopwords. If the resource is not available locally, run:
 
