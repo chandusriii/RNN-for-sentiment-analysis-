@@ -43,6 +43,8 @@ The notebook `RNN_for_sentimentanalysis.ipynb` contains the original experiment.
 
 **Test accuracy recorded in the original notebook: 85.16%.**
 
+See [baseline results](results/baseline_results.md) for the experiment configuration and notes on which metrics have not yet been verified.
+
 This is the result from the original experiment; it should not be interpreted as the result of the planned sequence-based model.
 
 ### Important architecture detail
